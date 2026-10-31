@@ -153,6 +153,15 @@ public class Bot : MonoBehaviour
         coolDown = false;
     }
 
+    bool TargetInRange()
+    {
+        if(Vector3.Distance(this.transform.position, target.transform.position) < 10f)
+        {
+            return true;
+        }
+        return false;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -165,18 +174,22 @@ public class Bot : MonoBehaviour
         //CleverHide();
         /*if(CanSeeTarget())
             CleverHide();*/
-            if (!coolDown)
+        if (!coolDown)
+        {
+            if (!TargetInRange())
             {
-                if (CanSeeTarget() && CanSeeMe())
-                {
-                    CleverHide();
-                    coolDown = true;
-                    Invoke("BehaviorCoolDown", 5f);
-                }
-                else
-                {
-                    Pursue();
-                }
+                Wander();
             }
+            else if (CanSeeTarget() && CanSeeMe())
+            {
+                CleverHide();
+                coolDown = true;
+                Invoke("BehaviorCoolDown", 5f);
+            }
+                else                
+            {
+                Pursue();
+            }
+        }
     }
 }
