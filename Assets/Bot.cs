@@ -7,10 +7,12 @@ public class Bot : MonoBehaviour
 {
     NavMeshAgent agent;
     public GameObject target;
+    Drive ds;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         agent = this.GetComponent<NavMeshAgent>();
+        ds = this.GetComponent<Drive>();
     }
 
     void Seek(Vector3 location)
@@ -31,19 +33,29 @@ public class Bot : MonoBehaviour
         float relativeHeading = Vector3.Angle(this.transform.forward, this.transform.TransformVector(target.transform.forward));
         float toTarget = Vector3.Angle(this.transform.forward, this.transform.TransformVector(targetDir));
 
-        if((toTarget > 90 && relativeHeading < 20) || target.GetComponent<Drive>().currentSpeed < 0.01f)
+        if((toTarget > 90 && relativeHeading < 20) || ds.currentSpeed < 0.01f)
         {
             Seek(target.transform.position);
             return;
         }
 
-        float lookAround = targetDir.magnitude / (agent.speed + target.GetComponent<Drive>().currentSpeed);
+        float lookAround = targetDir.magnitude / (agent.speed + ds.currentSpeed);
         Seek(target.transform.position + target.transform.forward * lookAround);
+    }
+
+    void Evade()
+    {
+        Vector3 targetDir = target.transform.position - this.transform.position;
+
+        float lookAround = targetDir.magnitude / (agent.speed + ds.currentSpeed);
+        Flee(target.transform.position + target.transform.forward * lookAround);
     }
     // Update is called once per frame
     void Update()
     {
+        Seek(target.transform.position);
         //Flee(target.transform.position);
-        Pursue();
+        //Pursue();
+        //Evade();
     }
 }
